@@ -16,3 +16,7 @@ optional args (order is unimportant beyond arg1):
      size - set image longest side, the smaller side will be resized accordingly to preserve resolution
      codec=<char[]> - set codec
      to_file - creates an output file in the same directory
+
+Special behaviour, if the specified file is an animated gif,
+the program will output a json file with each frame converted.
+This json file is compatible with tti.

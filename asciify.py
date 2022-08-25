@@ -34,6 +34,11 @@ def to_string(image, size = None, inverted = False, codec = None):
 
 if __name__ == "__main__":
     import sys
+    import os
+    from PIL import Image
+    from moviepy.editor import VideoFileClip
+    import time
+    import json
 
     size = None
     inverted = False
@@ -64,13 +69,38 @@ if __name__ == "__main__":
                         code += char
                 codec.append(code)
 
-    asciified_image = to_string(Image.open(sys.argv[1]), size, inverted, codec)
-    if to_file:
-        dissasembled_path = sys.argv[1].replace('\\', '/').split('/')
-        path = '/'.join(dissasembled_path[0:-1]) + '/' + dissasembled_path[-1].replace(' ', '_').split('.')[0]+"_asciified.txt"
+    if sys.argv[1].split('.')[-1] == "gif":
+        animated_image = VideoFileClip(sys.argv[1])
+        interval = animated_image.duration / animated_image.reader.nframes / 10
+        image_array = []
+        for frame in animated_image.iter_frames():
+            image = Image.frombuffer("RGB", animated_image.size, frame)
+            image_array.append(to_string(image, size, inverted, codec))
 
-        file = open(path, "wt")
-        file.write(asciified_image)
-        file.close()
+        if not to_file:
+            frame = 0
+            running = True
+            while running:
+                os.system("cls")
+
+                print(image_array[frame])
+
+                frame += 1
+                frame %= len(image_array)
+                time.sleep(interval)
+        else:
+            jsonData = { "frames": image_array, "interval": interval}
+            file = open(sys.argv[1].split('.')[0]+".json", "wt")
+            file.write(json.dumps(jsonData))
+            file.close()
     else:
-        print(asciified_image)
+        asciified_image = to_string(Image.open(sys.argv[1]), size, inverted, codec)
+        if to_file:
+            dissasembled_path = sys.argv[1].replace('\\', '/').split('/')
+            path = '/'.join(dissasembled_path[0:-1]) + '/' + dissasembled_path[-1].replace(' ', '_').split('.')[0]+"_asciified.txt"
+
+            file = open(path, "wt")
+            file.write(asciified_image)
+            file.close()
+        else:
+            print(asciified_image)
