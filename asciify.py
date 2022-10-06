@@ -96,8 +96,9 @@ if __name__ == "__main__":
     else:
         asciified_image = to_string(Image.open(sys.argv[1]), size, inverted, codec)
         if to_file:
-            dissasembled_path = sys.argv[1].replace('\\', '/').split('/')
-            path = '/'.join(dissasembled_path[0:-1]) + '/' + dissasembled_path[-1].replace(' ', '_').split('.')[0]+"_asciified.txt"
+            path_parts = sys.argv[1].replace('\\', '/').split('/')
+            path_parts[-1] = path_parts[-1][:path_parts[-1].find('.')] + "_asciified.txt"
+            path = '/'.join(path_parts)
 
             file = open(path, "wt")
             file.write(asciified_image)
